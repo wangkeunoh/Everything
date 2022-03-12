@@ -3,36 +3,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_fetch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="FETCH" />
-
-        <Button
-            android:id="@+id/btn_dream"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="DREAM" />
-
-        <Button
-            android:id="@+id/btn_miracle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MIRACLE" />
-
-        <Button
-            android:id="@+id/btn_plm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PLM" />
-    </LinearLayout>
-
     <EditText
         android:id="@+id/et_input"
         android:layout_width="match_parent"

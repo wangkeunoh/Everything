@@ -1,8 +1,5 @@
 package com.example.everything;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -22,18 +19,22 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity {
@@ -163,48 +164,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Log.i("MainActivity", "onCreate(...) start");
 
-        // 'FETCH' button
-        bFetch = (Button) findViewById(R.id.btn_fetch);
-        bFetch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //SELECT * FROM tEverything WHERE description LIKE '%apn%';
-                // 1. editText의 내용을 가져 온다.
-                // 2. DBControl에게 검색 임무를 준다.
-                dbConThread = new DBControl(WT_SEARCH_ITEMS_FROM_DB_AND_ADD_ITEM_TO_ADAPTER);
-                dbConThread.start();
-            }
-        });
-
-        // 'DREAM' button
-        bDream = (Button) findViewById(R.id.btn_dream);
-        bDream.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dbConThread = new DBControl(WT_SEARCH_DREAM_AND_ADD_ITEM_TO_ADAPTER);
-                dbConThread.start();
-            }
-        });
-
-        // 'MIRACLE' button
-        bMiracle = (Button) findViewById(R.id.btn_miracle);
-        bMiracle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dbConThread = new DBControl(WT_SEARCH_MIRACLE_AND_ADD_ITEM_TO_ADAPTER);
-                dbConThread.start();
-            }
-        });
-
-        // 'PLM' button
-        bPlm = (Button) findViewById(R.id.btn_plm);
-        bPlm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dbConThread = new DBControl(WT_SEARCH_PLM_AND_ADD_ITEM_TO_ADAPTER);
-                dbConThread.start();
-            }
-        });
         // EditText
         etInput = (EditText) findViewById(R.id.et_input);
         etInput.setOnKeyListener(new View.OnKeyListener() {
