@@ -35,7 +35,6 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity {
     // Widget
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case MSG_SELECT_SUCCESS:
                     Log.i("MainActivity", "MSG_SELECT_SUCCESS");
-                    adapter.notifyDataSetChanged();
+                    adapter.refreshAdapter();
 
                     if (etInput.getText().length() != 0) {
                         etInput.setText(null);
@@ -125,34 +124,6 @@ public class MainActivity extends AppCompatActivity {
                 case MSG_SELECT_FAIL:
                     Log.i("MainActivity", "MSG_SELECT_FAIL");
                     Toast.makeText(getApplicationContext(), "MSG_SELECT_FAIL", Toast.LENGTH_LONG).show();
-                    break;
-                case MSG_DREAM_SUCCESS:
-                    Log.i("MainActivity", "MSG_DREAM_SUCCESS");
-                    adapter.notifyDataSetChanged();
-
-                    if (etInput.getText().length() != 0) {
-                        etInput.setText(null);
-                    }
-                    etInput.setText("Energy : " + DreamEnergy);
-                    etInput.setTextColor(Color.BLUE);
-                    break;
-                case MSG_MIRACLE_SUCCESS:
-                    Log.i("MainActivity", "MSG_MIRACLE_SUCCESS");
-                    adapter.notifyDataSetChanged();
-
-                    if (etInput.getText().length() != 0) {
-                        etInput.setText(null);
-                    }
-                    etInput.setText("연속 성공 : " + miracleContinueSuccess + ", 성공 : " + miracleSuccess +
-                            ", 실패 : " + miracleFail);
-                    etInput.setTextColor(Color.BLUE);
-                    break;
-                case MSG_PLM_SUCCESS:
-                    Log.i("MainActivity", "MSG_PLM_SUCCESS");
-                    adapter.notifyDataSetChanged();
-                    if (etInput.getText().length() != 0) {
-                        etInput.setText(null);
-                    }
                     break;
             }
         }
@@ -263,6 +234,9 @@ public class MainActivity extends AppCompatActivity {
             Record item = new Record(no, when, description);
             recordList.add(item);
         }
+        public void refreshAdapter() {
+            notifyDataSetChanged();
+        }
     }
 
     // 아이템 하나를 구성
@@ -316,6 +290,10 @@ public class MainActivity extends AppCompatActivity {
 
             this.workType = workType;
 
+        }
+
+        public void setWorkType(int workType) {
+            this.workType = workType;
         }
 
         // run() 을 한 번 완수하면 사라지나? 한번 만들어진 객체는 언제 사라질까?
@@ -419,126 +397,6 @@ public class MainActivity extends AppCompatActivity {
                             dbConThread.start();
                             Log.i("DBControl", "Add all items to Adapter");
                         }
-                        break;
-                    case WT_SEARCH_DREAM_AND_ADD_ITEM_TO_ADAPTER:
-                        DreamEnergy = 0;
-                        String sqlSelectDream = "SELECT * FROM `tEverything` WHERE `description` LIKE '%획득+%' OR `description` LIKE '%소진-%'";
-                        sqlSelectDream += "ORDER BY no desc";
-                        statement = mConn.createStatement();
-                        Log.i("DBControl", "sqlSelectAll  : " + sqlSelectDream);
-
-                        if (statement.execute(sqlSelectDream)) {
-                            resultSet = statement.getResultSet();
-                            adapter.recordList.clear();
-                        }
-                        //Add keyword items to Adapter
-                        while (resultSet.next()) {
-                            int no = resultSet.getInt(1);
-                            if (lastNo < no)
-                                lastNo = no;
-                            when = resultSet.getString(2);
-                            description = resultSet.getString(3);
-
-                            int start = 0;
-                            String numString = null;
-                            String subDescription = null;
-
-                            if ((start = description.indexOf("-")) >= 0) {
-                                subDescription = description.substring(start);
-                                //numString = subDescription.replaceAll("[^0-9]","");
-//                                numString = subDescription.substring(start, start+3);
-//                                numString = numString.replaceAll("[^0-9]","");
-
-                                StringTokenizer str = new StringTokenizer(subDescription, " ");
-                                while (str.hasMoreTokens()) {
-                                    DreamEnergy -= Integer.parseInt(str.nextToken().replaceAll("[^0-9]",""));
-                                    break;
-                                }
-//                              Log.i("DBControl", "DreamEnergy  : " + Integer.parseInt(numString) + "description :" + description);
-                            } else {
-                                start = description.indexOf("+");
-                                subDescription = description.substring(start);
-
-                                StringTokenizer str = new StringTokenizer(subDescription, " ");
-                                while (str.hasMoreTokens()) {
-                                    DreamEnergy += Integer.parseInt(str.nextToken().replaceAll("[^0-9]",""));
-                                    break;
-                                }
-//                              Log.i("DBControl", "DreamEnergy  : " + Integer.parseInt(numString) + "description :" + description);
-                            }
-                            adapter.addItem(no, when, description);
-                        }
-                        message = mHandler.obtainMessage();
-                        message.what = MSG_DREAM_SUCCESS;
-                        mHandler.sendMessage(message);
-                        Log.i("DBControl", "Add all items to Adapter(Dream)");
-                        break;
-                    case WT_SEARCH_MIRACLE_AND_ADD_ITEM_TO_ADAPTER:
-                        String sqlSelectMiracle = "SELECT * FROM `tEverything` WHERE `description` " +
-                                "LIKE '%기상%' OR `description` LIKE '%취침%' OR `description` LIKE '%미라클모닝%'";
-                        sqlSelectMiracle += "ORDER BY no desc";
-                        statement = mConn.createStatement();
-                        miracleSuccess = 0;
-                        miracleFail = 0;
-                        miracleContinueSuccess = 0;
-                        Log.i("DBControl", "sqlSelectAll  : " + sqlSelectMiracle);
-
-                        if (statement.execute(sqlSelectMiracle)) {
-                            resultSet = statement.getResultSet();
-                            adapter.recordList.clear();
-                        }
-                        //Add keyword items to Adapter
-                        while (resultSet.next()) {
-                            int no = resultSet.getInt(1);
-                            if (lastNo < no)
-                                lastNo = no;
-                            when = resultSet.getString(2);
-                            description = resultSet.getString(3);
-
-                            int startPlus = description.indexOf("+");
-                            if (startPlus > 0) {
-                                miracleSuccess++;
-                                if (miracleFail == 0) {
-                                    miracleContinueSuccess++;
-                                }
-                            }
-
-                            int startMinus = description.indexOf("-");
-                            if (startMinus > 0) {
-                                miracleFail++;
-                            }
-                            adapter.addItem(no, when, description);
-                        }
-
-                        Log.i("DBControl", "Add all items to Adapter(Miracle)");
-                        message = mHandler.obtainMessage();
-                        message.what = MSG_MIRACLE_SUCCESS;
-                        mHandler.sendMessage(message);
-                        break;
-                    case WT_SEARCH_PLM_AND_ADD_ITEM_TO_ADAPTER:
-                        String sqlSelectPlm = "SELECT * FROM `tEverything` WHERE `description` LIKE '%업무%'";
-                        sqlSelectPlm += " ORDER BY no desc";
-                        statement = mConn.createStatement();
-                        Log.i("DBControl", "sqlSelectAll  : " + sqlSelectPlm);
-
-                        if (statement.execute(sqlSelectPlm)) {
-                            resultSet = statement.getResultSet();
-                            adapter.recordList.clear();
-                        }
-                        //Add keyword items to Adapter
-                        while (resultSet.next()) {
-                            int no = resultSet.getInt(1);
-                            if (lastNo < no)
-                                lastNo = no;
-                            when = resultSet.getString(2);
-                            description = resultSet.getString(3);
-                            adapter.addItem(no, when, description);
-                        }
-
-                        Log.i("DBControl", "Add all items to Adapter(sqlSelectPlm)");
-                        message = mHandler.obtainMessage();
-                        message.what = MSG_PLM_SUCCESS;
-                        mHandler.sendMessage(message);
                         break;
                 }
             } catch (SQLException e) {
