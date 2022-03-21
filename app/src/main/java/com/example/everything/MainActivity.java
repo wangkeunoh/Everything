@@ -104,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case MSG_INSERT_SUCCESS:
                     Log.i("MainActivity", "MSG_INSERT_SUCCESS");
+                    adapter.refreshAdapter();
+
                     etInput.setText(null);
                     dbConThread = new DBControl(WT_FETCH_ALL_AND_ADD_ALL_ITEMS_TO_ADAPTER);
                     dbConThread.start();
@@ -148,11 +150,11 @@ public class MainActivity extends AppCompatActivity {
                             etInput.setText(content);
                             Log.i("MainActivity", "onKey(KeyEvent.KEYCODE_ENTER) : " + content);
 
-                            if (content.contains(".")) {
+                            if (content.contains(".")) { // 엔터를 눌러서 입력이 완료 된 경우 . 포함해서 정상인 경우
                                 Log.i("MainActivity", "onKey(KeyEvent.KEYCODE_ENTER) - 51");
                                 dbConThread = new DBControl(WT_INSERT_ITEM_TO_DB_AND_ADD_ITEM_TO_ADAPTER);
 
-                            } else {
+                            } else { // 엔터 눌렀는데 . 이 없는 경우 검색을 한다.
                                 Log.i("MainActivity", "onKey(KeyEvent.KEYCODE_ENTER) - 52");
                                 dbConThread = new DBControl(WT_SEARCH_ITEMS_FROM_DB_AND_ADD_ITEM_TO_ADAPTER);
                             }
@@ -219,14 +221,17 @@ public class MainActivity extends AppCompatActivity {
             tvWhen = (TextView) convertView.findViewById(R.id.tv_date);
             tvDescription = (TextView) convertView.findViewById(R.id.tv_description);
 
-            Record record = recordList.get(position);
-            tvNo.setText("" + record.getNo());
-            tvNo.setTextSize(7);
-            tvWhen.setText(record.getDate());
-            tvWhen.setTextSize(7);
-            tvDescription.setText(record.getDescription());
-            tvDescription.setTextSize(10);
-
+            try {
+                Record record = recordList.get(position);
+                tvNo.setText("" + record.getNo());
+                tvNo.setTextSize(7);
+                tvWhen.setText(record.getDate());
+                tvWhen.setTextSize(7);
+                tvDescription.setText(record.getDescription());
+                tvDescription.setTextSize(10);
+            } catch (IndexOutOfBoundsException e) { // java.lang.IndexOutOfBoundsException: Index: 4, Size: 0
+                e.printStackTrace();
+            }
             return convertView;
         }
 

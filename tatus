@@ -1,0 +1,49 @@
+[33mcommit 55456f5597f4f7007367edb738cfaf4817d808db[m[33m ([m[1;36mHEAD -> [m[1;32mlegacy[m[33m, [m[1;31morigin/legacy[m[33m)[m
+Author: Wangkeun Oh <wangkeunoh@gmail.com>
+Date:   Sun Mar 13 02:00:13 2022 +0900
+
+    필요없는거 삭제하고..refresh추가하고 refresh가 앱이 죽는거에 도움이 될까?
+
+[33mcommit fc7f9059e3c16334ad004b8bf9ea3fdcfabdcf87[m
+Author: Wangkeun Oh <wangkeunoh@gmail.com>
+Date:   Sun Mar 13 00:53:28 2022 +0900
+
+    너무 편의를 제공하면 지저분하다 필요없는 기능 다 삭제 해버리고 세로 화면 고정
+
+[33mcommit a22be094260bb53add90e2a84456efc98af9da68[m
+Author: Wangkeun Oh <wangkeunoh@gmail.com>
+Date:   Sat Mar 12 23:15:01 2022 +0900
+
+    최초 작업했던 Everything, 원본 버전
+
+[33mcommit 900fa79eda76b6fcc141c6e5df28394f775e4a7a[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Wangkeun Oh <wangkeunoh@gmail.com>
+Date:   Sat Dec 4 23:40:58 2021 +0900
+
+    원래 있던 코드를 다 가져와서 빌드까지만 성공 함
+    배워야할게 많다 프레그먼트, ViewModel 등..
+
+[33mcommit 6e035e14036f557fafaabecfcecd0ed41e3d3802[m
+Author: Wangkeun Oh <wangkeunoh@gmail.com>
+Date:   Fri Nov 26 23:51:16 2021 +0900
+
+    a little copy to ubuntu
+
+[33mcommit 68f9ab7c6821146e042e39f3f0da5dd543d2bd9a[m
+Author: Wangkeun Oh <wangkeunoh@gmail.com>
+Date:   Fri Nov 26 22:19:08 2021 +0900
+
+    1. remove mail floating mail widget
+    2. edit string.xml
+
+[33mcommit ad4c03e93973cf1b8c7a9e03b3727f7df8020f55[m
+Author: Wangkeun Oh <wangkeunoh@gmail.com>
+Date:   Thu Nov 25 22:34:57 2021 +0900
+
+    Create README.md
+
+[33mcommit dcffb2f604f27cb461a34947750f59a37c8adf97[m
+Author: Wangkeun Oh <wangkeunoh@gmail.com>
+Date:   Thu Nov 25 22:34:35 2021 +0900
+
+    Initial commit
