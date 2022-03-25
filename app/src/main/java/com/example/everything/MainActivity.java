@@ -96,22 +96,25 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what) {
                 case MSG_CONNECT_SUCCESS:
                     Log.i("MainActivity", "MSG_CONNECT_SUCCESS");
+                    adapter.refreshAdapter();
                     etInput.setText(null);
                     break;
                 case MSG_CONNECT_FAIL:
                     Log.i("MainActivity", "MSG_CONNECT_FAIL");
+                    adapter.refreshAdapter();
                     Toast.makeText(getApplicationContext(), "MSG_CONNECT_FAIL", Toast.LENGTH_LONG).show();
                     break;
                 case MSG_INSERT_SUCCESS:
                     Log.i("MainActivity", "MSG_INSERT_SUCCESS");
                     adapter.refreshAdapter();
-
                     etInput.setText(null);
                     dbConThread = new DBControl(WT_FETCH_ALL_AND_ADD_ALL_ITEMS_TO_ADAPTER);
                     dbConThread.start();
+                    adapter.refreshAdapter();
                     break;
                 case MSG_INSERT_FAIL:
                     Log.i("MainActivity", "MSG_INSERT_FAIL" + error);
+                    adapter.refreshAdapter();
                     Toast.makeText(getApplicationContext(), "MSG_INSERT_FAIL : " + error, Toast.LENGTH_LONG).show();
                     break;
                 case MSG_SELECT_SUCCESS:
@@ -125,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case MSG_SELECT_FAIL:
                     Log.i("MainActivity", "MSG_SELECT_FAIL");
+                    adapter.refreshAdapter();
                     Toast.makeText(getApplicationContext(), "MSG_SELECT_FAIL", Toast.LENGTH_LONG).show();
                     break;
             }
@@ -154,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
                                 Log.i("MainActivity", "onKey(KeyEvent.KEYCODE_ENTER) - 51");
                                 dbConThread = new DBControl(WT_INSERT_ITEM_TO_DB_AND_ADD_ITEM_TO_ADAPTER);
 
+                            } else if (content.length() > 10) {
+                                break; // 실컷 임력해놓고 .을 안적고 엔터를 해서 날라가는 경우가 많다.
                             } else { // 엔터 눌렀는데 . 이 없는 경우 검색을 한다.
                                 Log.i("MainActivity", "onKey(KeyEvent.KEYCODE_ENTER) - 52");
                                 dbConThread = new DBControl(WT_SEARCH_ITEMS_FROM_DB_AND_ADD_ITEM_TO_ADAPTER);
@@ -333,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
                             String description = resultSet.getString(3);
                             adapter.addItem(no, when, description);
                         }
+
                         message = mHandler.obtainMessage();
                         message.what = MSG_SELECT_SUCCESS;
                         mHandler.sendMessage(message);
@@ -355,6 +362,7 @@ public class MainActivity extends AppCompatActivity {
                                 prepareStatement.executeUpdate();
                                 prepareStatement.close();
                                 adapter.addItem(lastNo + 1, when, String.valueOf(etInput.getText()));
+
                                 Log.i("DBControl", sqlInsert + " success");
                                 message = mHandler.obtainMessage();
                                 message.what = MSG_INSERT_SUCCESS;
@@ -392,6 +400,7 @@ public class MainActivity extends AppCompatActivity {
                                 description = resultSet.getString(3);
                                 adapter.addItem(no, when, description);
                             }
+
                             message = mHandler.obtainMessage();
                             message.what = MSG_SELECT_SUCCESS;
                             mHandler.sendMessage(message);
