@@ -108,9 +108,11 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("MainActivity", "MSG_INSERT_SUCCESS");
                     adapter.refreshAdapter();
                     etInput.setText(null);
+                    adapter.recordList.clear();
                     dbConThread = new DBControl(WT_FETCH_ALL_AND_ADD_ALL_ITEMS_TO_ADAPTER);
                     dbConThread.start();
                     adapter.refreshAdapter();
+                    dbConThread.interrupt();
                     break;
                 case MSG_INSERT_FAIL:
                     Log.i("MainActivity", "MSG_INSERT_FAIL" + error);
@@ -156,15 +158,20 @@ public class MainActivity extends AppCompatActivity {
 
                             if (content.contains(".")) { // 엔터를 눌러서 입력이 완료 된 경우 . 포함해서 정상인 경우
                                 Log.i("MainActivity", "onKey(KeyEvent.KEYCODE_ENTER) - 51");
+                                adapter.recordList.clear();
                                 dbConThread = new DBControl(WT_INSERT_ITEM_TO_DB_AND_ADD_ITEM_TO_ADAPTER);
 
                             } else if (content.length() > 10) {
                                 break; // 실컷 임력해놓고 .을 안적고 엔터를 해서 날라가는 경우가 많다.
                             } else { // 엔터 눌렀는데 . 이 없는 경우 검색을 한다.
                                 Log.i("MainActivity", "onKey(KeyEvent.KEYCODE_ENTER) - 52");
+                                adapter.recordList.clear();
                                 dbConThread = new DBControl(WT_SEARCH_ITEMS_FROM_DB_AND_ADD_ITEM_TO_ADAPTER);
                             }
                             dbConThread.start();
+                            adapter.refreshAdapter();
+                            dbConThread.interrupt();
+
                         }
                         break;
                 }
@@ -178,8 +185,11 @@ public class MainActivity extends AppCompatActivity {
         lvResult.setAdapter(adapter);
 
         //DBControl 클래스의 객체를 만들고, 생성자로 할일의 타입을 넘겨 줌
+        adapter.recordList.clear();
         dbConThread = new DBControl(WT_FETCH_ALL_AND_ADD_ALL_ITEMS_TO_ADAPTER);
         dbConThread.start();
+        adapter.refreshAdapter();
+        dbConThread.interrupt();
 
         Log.i("MainActivity", "onCreate(...) end");
     }
@@ -236,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
                 tvDescription.setText(record.getDescription());
                 tvDescription.setTextSize(10);
             } catch (IndexOutOfBoundsException e) { // java.lang.IndexOutOfBoundsException: Index: 4, Size: 0
+                Log.i("ListViewAdapter", "IndexOutOfBoundsException :");
                 e.printStackTrace();
             }
             return convertView;
@@ -245,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
             Record item = new Record(no, when, description);
             recordList.add(item);
         }
+
         public void refreshAdapter() {
             notifyDataSetChanged();
         }
@@ -322,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (workType) {
                     case WT_FETCH_ALL_AND_ADD_ALL_ITEMS_TO_ADAPTER:
-                        adapter.recordList.clear();
+                        //adapter.recordList.clear();
                         String sqlSelectAll = "SELECT * FROM tEverything ORDER BY no desc;";
                         statement = mConn.createStatement();
                         Log.i("DBControl", "sqlSelectAll  : " + sqlSelectAll);
@@ -379,8 +391,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                     case WT_SEARCH_ITEMS_FROM_DB_AND_ADD_ITEM_TO_ADAPTER:
-                        if (etInput.getText().length() != 0 && !etInput.getText().toString().contains("Energy :")
-                                && !etInput.getText().toString().contains("Miracle :") ) {
+                        if (etInput.getText().length() != 0) {
                             String sqlSelectKeyword = "SELECT * FROM `tEverything` WHERE `description` LIKE ";
                             sqlSelectKeyword += "'%" + etInput.getText() + "%'";
                             sqlSelectKeyword += "ORDER BY no desc";
@@ -389,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
 
                             if (statement.execute(sqlSelectKeyword)) {
                                 resultSet = statement.getResultSet();
-                                adapter.recordList.clear();
+                                //adapter.recordList.clear();
                             }
                             //Add keyword items to Adapter
                             while (resultSet.next()) {
@@ -405,11 +416,6 @@ public class MainActivity extends AppCompatActivity {
                             message.what = MSG_SELECT_SUCCESS;
                             mHandler.sendMessage(message);
                             Log.i("DBControl", "Add all items to Adapter(result of keyword)");
-                        } else {
-                            adapter.recordList.clear();
-                            dbConThread = new DBControl(WT_FETCH_ALL_AND_ADD_ALL_ITEMS_TO_ADAPTER);
-                            dbConThread.start();
-                            Log.i("DBControl", "Add all items to Adapter");
                         }
                         break;
                 }
@@ -419,6 +425,7 @@ public class MainActivity extends AppCompatActivity {
                 mHandler.sendMessage(message);
                 e.printStackTrace();
             }
+
             Log.i("DBControl", "run() end, workType : " + workType);
         }
     }
